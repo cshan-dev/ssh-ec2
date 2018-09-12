@@ -1,0 +1,21 @@
+KEY_DIR="~"
+
+if [ -z "$1" ]
+then
+  echo "Specify instance Name"
+  exit 2
+fi
+
+instance=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=$1")
+running=$(echo "$instance" | grep -m 1 running)
+if [ -z "$running" ]
+then
+  echo "Instance not running"
+else
+  dns=$(echo "$instance" | grep -m 1 PublicDnsName | awk -F\" '{print $4}')
+  keypair=$(echo "$instance" | grep -m 1 KeyName | awk -F\" '{print $4}')
+  user="ec2-user"
+  echo $dns
+  echo $keypair
+  ssh -i "$KEY_DIR/$keypair.pem" $user@$dns
+fi
