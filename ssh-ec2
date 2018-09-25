@@ -1,4 +1,5 @@
 KEY_DIR="~"
+DEFAULT_USER="ec2-user"
 
 if [ -z "$1" ]
 then
@@ -14,8 +15,7 @@ then
 else
   dns=$(echo "$instance" | grep -m 1 PublicDnsName | awk -F\" '{print $4}')
   keypair=$(echo "$instance" | grep -m 1 KeyName | awk -F\" '{print $4}')
-  user="ec2-user"
   echo $dns
   echo $keypair
-  ssh -i "$KEY_DIR/$keypair.pem" $user@$dns
+  ssh -i "$KEY_DIR/$keypair.pem" ${2:-DEFAULT_USER}@$dns
 fi
